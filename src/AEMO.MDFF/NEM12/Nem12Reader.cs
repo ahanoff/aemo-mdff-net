@@ -74,7 +74,7 @@ public class Nem12Reader() : IMdffReader
     private HeaderRecord ParseHeaderRecord(CsvDataReader csv)
     {
         var dateTimeString = csv.GetString(2);
-        var dateTime = DateTime.ParseExact(dateTimeString, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        var dateTime = DateTime.ParseExact(dateTimeString, "yyyyMMddHHmm", CultureInfo.InvariantCulture);
 
         return new HeaderRecord()
         {
@@ -87,7 +87,7 @@ public class Nem12Reader() : IMdffReader
     private NMIDataDetailsRecord ParseNMIDataDetailsRecord(CsvDataReader csv)
     {
         var dateString = csv.GetString(9);
-        var date = DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+        var date = DateOnly.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
 
         return new NMIDataDetailsRecord
         {
