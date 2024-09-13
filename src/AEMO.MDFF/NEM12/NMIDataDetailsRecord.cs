@@ -5,7 +5,7 @@ namespace AEMO.MDFF.NEM12;
 public sealed class NMIDataDetailsRecord : IMdffRecord
 {
     public string RecordIndicator => "200";
-    public string NMI { get; set; }
+    public required string NMI { get; set; }
     public string NMIConfiguration { get; set; }
     public string RegisterId { get; set; }
     public string NMISuffix { get; set; }
