@@ -2,7 +2,7 @@ using AEMO.MDFF.Abstractions;
 
 namespace AEMO.MDFF.NEM12;
 
-public class NMIDataDetailsRecord : IMdffRecord
+public sealed class NMIDataDetailsRecord : IMdffRecord
 {
     public string RecordIndicator => "200";
     public string NMI { get; set; }
@@ -13,5 +13,5 @@ public class NMIDataDetailsRecord : IMdffRecord
     public string MeterSerialNumber { get; set; }
     public string UOM { get; set; }
     public int IntervalLength { get; set; }
-    public DateTimeOffset NextScheduledReadDate { get; set; }
+    public DateTime NextScheduledReadDate { get; set; }
 }
