@@ -3,7 +3,6 @@
 [![Build](https://github.com/ahanoff/aemo-mdff-net/actions/workflows/build.yaml/badge.svg)](https://github.com/ahanoff/aemo-mdff-net/actions/workflows/build.yaml)
 ![NuGet Version](https://img.shields.io/nuget/vpre/AEMO.MDFF)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/AEMO.MDFF)
-![GitHub License](https://img.shields.io/github/license/ahanoff/aemo-mdff-net)
 
 Parser for Australian Energy Market Operator (AEMO) Meter Data File Format (MDFF) specification
 
