@@ -17,7 +17,6 @@
         <PackageTags>parsing;aemo;nem12;nem13;meter-reading</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <Company>ahanoff</Company>
-        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
