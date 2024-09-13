@@ -1,6 +1,9 @@
 # AEMO.MDFF
 
+[![Build](https://github.com/ahanoff/aemo-mdff-net/actions/workflows/build.yaml/badge.svg)](https://github.com/ahanoff/aemo-mdff-net/actions/workflows/build.yaml)
+
 Parser for Australian Energy Market Operator (AEMO) Meter Data File Format (MDFF) specification
+
 
 ## References
 
