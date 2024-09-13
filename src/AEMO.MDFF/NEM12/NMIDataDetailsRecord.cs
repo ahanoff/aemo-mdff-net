@@ -13,5 +13,5 @@ public sealed class NMIDataDetailsRecord : IMdffRecord
     public string MeterSerialNumber { get; set; }
     public string UOM { get; set; }
     public int IntervalLength { get; set; }
-    public DateTime NextScheduledReadDate { get; set; }
+    public DateOnly NextScheduledReadDate { get; set; }
 }
