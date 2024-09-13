@@ -4,6 +4,20 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>0.1.0-alpha1</Version>
+        <Title>AEMO.MDFF</Title>
+        <Authors>Akhan Zhakiyanov</Authors>
+        <Description>Parser for Australian Energy Market Operator (AEMO) Meter Data File Format (MDFF) specification</Description>
+        <Copyright>Copyright © 2024, Akhan Zhakiyanov. All rights reserved.</Copyright>
+        <PackageProjectUrl>https://github.com/ahanoff/aemo-mdff-net</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/ahanoff/aemo-mdff-net</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>parsing;aemo;nem12;nem13;meter-reading</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Company>ahanoff</Company>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
