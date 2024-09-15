@@ -110,11 +110,16 @@ public class Nem12Reader() : IMdffReader
         int intervalLength = _nmiIntervalLengths[currentNMI];
         int expectedIntervals = 1440 / intervalLength; // 1440 minutes in a day
 
+        var intervalValues = new List<decimal>();
+        for (int i = 2; i < expectedIntervals + 2; i++)
+        {
+            intervalValues.Add(csv.GetDecimal(i));
+        }
+
         return new IntervalDataRecord
         {
-            IntervalDate = date
-            // TODO: parse interval values
+            IntervalDate = date,
+            IntervalValues = intervalValues
         };
     }
-    
 }
