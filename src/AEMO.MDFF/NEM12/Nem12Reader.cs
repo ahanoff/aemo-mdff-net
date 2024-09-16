@@ -105,10 +105,10 @@ public class Nem12Reader() : IMdffReader
     
     private IntervalDataRecord ParseIntervalDataRecord(CsvDataReader csv, string currentNMI)
     {
-        var dateString = csv.GetString(1);
-        var date = DateOnly.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+        var intervalDate = DateOnly.ParseExact(csv.GetString(1), "yyyyMMdd", CultureInfo.InvariantCulture);
         int intervalLength = _nmiIntervalLengths[currentNMI];
         int expectedIntervals = 1440 / intervalLength; // 1440 minutes in a day
+        var updateDateTime = DateTime.ParseExact(csv.GetString(2 + expectedIntervals + 3), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
         var intervalValues = new List<decimal>();
         for (int i = 2; i < expectedIntervals + 2; i++)
@@ -118,8 +118,9 @@ public class Nem12Reader() : IMdffReader
 
         return new IntervalDataRecord
         {
-            IntervalDate = date,
-            IntervalValues = intervalValues
+            IntervalDate = intervalDate,
+            IntervalValues = intervalValues,
+            UpdateDateTime = updateDateTime,
         };
     }
 }
