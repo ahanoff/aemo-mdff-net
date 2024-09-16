@@ -27,8 +27,9 @@ public class BasicTest
                 case NMIDataDetailsRecord { NextScheduledReadDate: var nsrd }:
                     _testOutputHelper.WriteLine(nsrd.ToLongDateString());
                     break;
-                case IntervalDataRecord { IntervalValues: var ivs }:
-                    _testOutputHelper.WriteLine(ivs.ToString());
+                case IntervalDataRecord intervalDataRecord:
+                    _testOutputHelper.WriteLine(intervalDataRecord.IntervalValues.ToString());
+                    _testOutputHelper.WriteLine(intervalDataRecord.UpdateDateTime.ToLongTimeString());
                     break;
             }
         }

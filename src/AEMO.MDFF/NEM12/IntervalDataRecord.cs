@@ -10,6 +10,6 @@ public sealed class IntervalDataRecord : IMdffRecord
     public string QualityMethod { get; set; }
     public string ReasonCode { get; set; }
     public string ReasonDescription { get; set; }
-    public string UpdateDateTime { get; set; }
+    public DateTime UpdateDateTime { get; set; }
     public DateTime MSATSLoadDateTime { get; set; }
 }
