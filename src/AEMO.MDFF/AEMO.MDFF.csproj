@@ -9,6 +9,7 @@
         <Copyright>Copyright © 2024, Akhan Zhakiyanov. All rights reserved.</Copyright>
         <PackageProjectUrl>https://github.com/ahanoff/aemo-mdff-net</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/ahanoff/aemo-mdff-net</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>parsing;aemo;nem12;nem13;meter-reading</PackageTags>
@@ -17,10 +18,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-      <PackageReference Include="Microsoft.Extensions.Options" />
       <PackageReference Include="Sylvan.Data.Csv" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
