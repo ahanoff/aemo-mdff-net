@@ -7,8 +7,6 @@ namespace AEMO.MDFF.NEM12;
 
 public class Nem12Reader() : IMdffReader
 {
-    private readonly Dictionary<string, int> _nmiIntervalLengths = new();
-
     public async IAsyncEnumerable<IMdffRecord> ReadAsync(Stream stream, [EnumeratorCancellation] CancellationToken ct)
     {
         using var sr = new StreamReader(stream);
@@ -20,7 +18,7 @@ public class Nem12Reader() : IMdffReader
         
         bool headerFound = false;
         bool endFound = false;
-        string currentNMI = null;
+        int? currentIntervalLength = null;
         
         while (await csv.ReadAsync(ct) && !endFound)
         {
@@ -38,14 +36,15 @@ public class Nem12Reader() : IMdffReader
                     if (!headerFound)
                         throw new InvalidDataException("Data record found before header");
                     var ddr = ParseNMIDataDetailsRecord(csv);
-                    currentNMI = ddr.NMI;
-                    _nmiIntervalLengths[currentNMI] = ddr.IntervalLength;
+                    currentIntervalLength = ddr.IntervalLength;
                     yield return ddr;
                     break;
                 case "300":
                     if (!headerFound)
                         throw new InvalidDataException("Data record found before header");
-                    var idr = ParseIntervalDataRecord(csv, currentNMI);
+                    if (currentIntervalLength is null)
+                        throw new InvalidDataException("Interval data record found before NMI data details record");
+                    var idr = ParseIntervalDataRecord(csv, currentIntervalLength.Value);
                     yield return idr;
                     break;
                 case "400":
@@ -103,17 +102,16 @@ public class Nem12Reader() : IMdffReader
         };
     }
     
-    private IntervalDataRecord ParseIntervalDataRecord(CsvDataReader csv, string currentNMI)
+    private IntervalDataRecord ParseIntervalDataRecord(CsvDataReader csv, int intervalLength)
     {
         var intervalDate = DateOnly.ParseExact(csv.GetString(1), "yyyyMMdd", CultureInfo.InvariantCulture);
-        int intervalLength = _nmiIntervalLengths[currentNMI];
         int expectedIntervals = 1440 / intervalLength; // 1440 minutes in a day
         var updateDateTime = DateTime.ParseExact(csv.GetString(2 + expectedIntervals + 3), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
-        var intervalValues = new List<decimal>();
+        var intervalValues = new decimal[expectedIntervals];
         for (int i = 2; i < expectedIntervals + 2; i++)
         {
-            intervalValues.Add(csv.GetDecimal(i));
+            intervalValues[i - 2] = csv.GetDecimal(i);
         }
 
         return new IntervalDataRecord
