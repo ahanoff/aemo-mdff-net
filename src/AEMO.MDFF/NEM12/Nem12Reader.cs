@@ -50,10 +50,14 @@ public class Nem12Reader() : IMdffReader
                 case "400":
                     if (!headerFound)
                         throw new InvalidDataException("Data record found before header");
+                    var ier = ParseIntervalEventRecord(csv);
+                    yield return ier;
                     break;
                 case "500":
                     if (!headerFound)
                         throw new InvalidDataException("Data record found before header");
+                    var b2b = ParseB2BDetailsRecord(csv);
+                    yield return b2b;
                     break;
                 case "900":
                     var er = new EndRecord();
@@ -85,20 +89,17 @@ public class Nem12Reader() : IMdffReader
     }
     private NMIDataDetailsRecord ParseNMIDataDetailsRecord(CsvDataReader csv)
     {
-        var dateString = csv.GetString(9);
-        var date = DateOnly.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-
         return new NMIDataDetailsRecord
         {
             NMI = csv.GetString(1),
             NMIConfiguration = csv.GetString(2),
-            RegisterId = csv.GetString(3),
+            RegisterId = GetOptionalString(csv, 3),
             NMISuffix = csv.GetString(4),
-            MDMDataStreamIdentifier = csv.GetString(5),
-            MeterSerialNumber = csv.GetString(6),
+            MDMDataStreamIdentifier = GetOptionalString(csv, 5),
+            MeterSerialNumber = GetOptionalString(csv, 6),
             UOM = csv.GetString(7),
             IntervalLength = csv.GetInt32(8),
-            NextScheduledReadDate = date
+            NextScheduledReadDate = ParseOptionalDate(csv, 9)
         };
     }
     
@@ -106,7 +107,11 @@ public class Nem12Reader() : IMdffReader
     {
         var intervalDate = DateOnly.ParseExact(csv.GetString(1), "yyyyMMdd", CultureInfo.InvariantCulture);
         int expectedIntervals = 1440 / intervalLength; // 1440 minutes in a day
-        var updateDateTime = DateTime.ParseExact(csv.GetString(2 + expectedIntervals + 3), "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        int qualityMethodIndex = 2 + expectedIntervals;
+        int reasonCodeIndex = qualityMethodIndex + 1;
+        int reasonDescriptionIndex = qualityMethodIndex + 2;
+        int updateDateTimeIndex = qualityMethodIndex + 3;
+        int msatsLoadDateTimeIndex = qualityMethodIndex + 4;
 
         var intervalValues = new decimal[expectedIntervals];
         for (int i = 2; i < expectedIntervals + 2; i++)
@@ -118,7 +123,55 @@ public class Nem12Reader() : IMdffReader
         {
             IntervalDate = intervalDate,
             IntervalValues = intervalValues,
-            UpdateDateTime = updateDateTime,
+            QualityMethod = csv.GetString(qualityMethodIndex),
+            ReasonCode = GetOptionalString(csv, reasonCodeIndex),
+            ReasonDescription = GetOptionalString(csv, reasonDescriptionIndex),
+            UpdateDateTime = ParseOptionalDateTime(csv, updateDateTimeIndex),
+            MSATSLoadDateTime = ParseOptionalDateTime(csv, msatsLoadDateTimeIndex),
         };
+    }
+
+    private IntervalEventRecord ParseIntervalEventRecord(CsvDataReader csv)
+    {
+        return new IntervalEventRecord
+        {
+            StartInterval = csv.GetInt32(1),
+            EndInterval = csv.GetInt32(2),
+            QualityMethod = csv.GetString(3),
+            ReasonCode = GetOptionalString(csv, 4),
+            ReasonDescription = GetOptionalString(csv, 5),
+        };
+    }
+
+    private B2BDetailsRecord ParseB2BDetailsRecord(CsvDataReader csv)
+    {
+        return new B2BDetailsRecord
+        {
+            TransCode = csv.GetString(1),
+            RetServiceOrder = GetOptionalString(csv, 2),
+            ReadDateTime = ParseOptionalDateTime(csv, 3),
+            IndexRead = GetOptionalString(csv, 4),
+        };
+    }
+    private static DateOnly? ParseOptionalDate(CsvDataReader csv, int index)
+    {
+        var value = GetOptionalString(csv, index);
+        return value is null
+            ? null
+            : DateOnly.ParseExact(value, "yyyyMMdd", CultureInfo.InvariantCulture);
+    }
+
+    private static DateTime? ParseOptionalDateTime(CsvDataReader csv, int index)
+    {
+        var value = GetOptionalString(csv, index);
+        return value is null
+            ? null
+            : DateTime.ParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+    }
+
+    private static string? GetOptionalString(CsvDataReader csv, int index)
+    {
+        var value = csv.GetString(index);
+        return string.IsNullOrEmpty(value) ? null : value;
     }
 }
