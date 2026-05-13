@@ -85,20 +85,17 @@ public class Nem12Reader() : IMdffReader
     }
     private NMIDataDetailsRecord ParseNMIDataDetailsRecord(CsvDataReader csv)
     {
-        var dateString = csv.GetString(9);
-        var date = DateOnly.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-
         return new NMIDataDetailsRecord
         {
             NMI = csv.GetString(1),
             NMIConfiguration = csv.GetString(2),
-            RegisterId = csv.GetString(3),
+            RegisterId = GetOptionalString(csv, 3),
             NMISuffix = csv.GetString(4),
-            MDMDataStreamIdentifier = csv.GetString(5),
-            MeterSerialNumber = csv.GetString(6),
+            MDMDataStreamIdentifier = GetOptionalString(csv, 5),
+            MeterSerialNumber = GetOptionalString(csv, 6),
             UOM = csv.GetString(7),
             IntervalLength = csv.GetInt32(8),
-            NextScheduledReadDate = date
+            NextScheduledReadDate = ParseOptionalDate(csv, 9)
         };
     }
     
@@ -120,5 +117,18 @@ public class Nem12Reader() : IMdffReader
             IntervalValues = intervalValues,
             UpdateDateTime = updateDateTime,
         };
+    }
+    private static DateOnly? ParseOptionalDate(CsvDataReader csv, int index)
+    {
+        var value = GetOptionalString(csv, index);
+        return value is null
+            ? null
+            : DateOnly.ParseExact(value, "yyyyMMdd", CultureInfo.InvariantCulture);
+    }
+
+    private static string? GetOptionalString(CsvDataReader csv, int index)
+    {
+        var value = csv.GetString(index);
+        return string.IsNullOrEmpty(value) ? null : value;
     }
 }

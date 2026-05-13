@@ -27,11 +27,11 @@ public class BasicTest
                     Assert.Equal(100.ToString(), vh);
                     break;
                 case NMIDataDetailsRecord { NextScheduledReadDate: var nsrd }:
-                    _testOutputHelper.WriteLine(nsrd.ToLongDateString());
+                    _testOutputHelper.WriteLine(nsrd?.ToLongDateString());
                     break;
                 case IntervalDataRecord intervalDataRecord:
                     _testOutputHelper.WriteLine(intervalDataRecord.IntervalValues.ToString());
-                    _testOutputHelper.WriteLine(intervalDataRecord.UpdateDateTime.ToLongTimeString());
+                    _testOutputHelper.WriteLine(intervalDataRecord.UpdateDateTime?.ToLongTimeString());
                     break;
             }
         }
@@ -49,6 +49,28 @@ public class BasicTest
 
         var ex = await Assert.ThrowsAsync<InvalidDataException>(() => DrainAsync(nem12Reader.ReadAsync(fs, CancellationToken.None)));
         Assert.Equal("Interval data record found before NMI data details record", ex.Message);
+    }
+
+    [Fact]
+    public async Task ParsesOptionalNmiFieldsAsNull()
+    {
+        var nem12Reader = new Nem12Reader();
+        await using var fs = CreateStream($"""
+                                          100,NEM12,200506081149,UNITEDDP,NEMMCO
+                                          200,NEM1201009,E1E2,,E1,,01009,kWh,30,
+                                          900
+                                          """);
+
+        var records = new List<IMdffRecord>();
+        await foreach (var record in nem12Reader.ReadAsync(fs, CancellationToken.None))
+        {
+            records.Add(record);
+        }
+
+        var nmiDataDetails = Assert.IsType<NMIDataDetailsRecord>(records[1]);
+        Assert.Null(nmiDataDetails.RegisterId);
+        Assert.Null(nmiDataDetails.MDMDataStreamIdentifier);
+        Assert.Null(nmiDataDetails.NextScheduledReadDate);
     }
 
     private static MemoryStream CreateStream(string content)
