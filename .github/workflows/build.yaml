@@ -21,9 +21,7 @@ jobs:
           dotnet-quality: 'ga'
 
       - name: Build solution
-        working-directory: src
         run: dotnet build
 
       - name: Run unit-tests
-        working-directory: src
         run: dotnet test
